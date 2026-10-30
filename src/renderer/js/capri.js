@@ -314,6 +314,14 @@ export class Capri {
     return this.view.floor - 6;
   }
 
+  // An x along the left or right edge of the screen, never in the middle: mostly the side she isn't on.
+  edgeX(side) {
+    const { w } = this.view;
+    const band = Math.max(side * 0.6, w * 0.06);
+    const left = this.pos.x > w / 2 ? Math.random() < 0.8 : Math.random() < 0.2;
+    return left ? rand(side, side + band) : rand(w - side - band, w - side);
+  }
+
   spot(name) {
     const { w } = this.view;
     const s = this.scale;
@@ -321,17 +329,14 @@ export class Capri {
     switch (name) {
       case 'post':
         return { x: w - side - 30, y: this.floor };
-      case 'stage':
-        return { x: w * 0.5 + rand(-w * 0.12, w * 0.12), y: this.floor };
+      case 'stage': // for her victory pose: the far edge of the screen, on the floor
+        return { x: this.edgeX(side), y: this.floor };
       case 'chip': // next to her biochip, bottom left
         return { x: side + 30, y: this.floor };
       default: {
         const y = Math.random() < 0.65 ? this.floor : rand(SPRITE.height * s + 200, this.floor);
         // only along the left or right edge of the screen, never in the middle: the far one from where she is
-        const band = Math.max(side * 0.6, w * 0.06);
-        const left = this.pos.x > w / 2 ? Math.random() < 0.8 : Math.random() < 0.2;
-        const x = left ? rand(side, side + band) : rand(w - side - band, w - side);
-        return { x, y };
+        return { x: this.edgeX(side), y };
       }
     }
   }
