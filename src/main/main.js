@@ -197,6 +197,7 @@ function createOverlay() {
   });
 
   overlay.setAlwaysOnTop(true, 'screen-saver');
+  if (process.platform === 'darwin') overlay.setHiddenInMissionControl(true); // no window of hers in Mission Control
   overlay.setIgnoreMouseEvents(true, { forward: true });
   overlay.loadURL('capri://app/src/renderer/index.html');
   // always shown: put away, she's still there as her biochip in the corner. Sized again first:
@@ -1028,6 +1029,7 @@ function main() {
   if (process.platform === 'win32') app.setAppUserModelId('capri.desktop');
 
   app.whenReady().then(() => {
+    if (process.platform === 'darwin') app.dock?.hide(); // menu bar only, no Dock icon
     if (!['codex', 'claude'].includes(config.load().assistant)) config.save({ assistant: activeAssistant().id });
     serveProtocol();
     registerIpc();
@@ -1049,7 +1051,10 @@ function main() {
       onDebug: DEV ? debugHandler : null,
     });
     startNotificationWatch({
-      onNotification: (n) => overlay?.webContents.send('system:notification', n),
+      onNotification: (n) => {
+        console.log(`[capri] system notification from ${n.app}`);
+        overlay?.webContents.send('system:notification', n);
+      },
       onState: (s) => console.log(`[capri] system notifications: ${s}`),
     });
     globalShortcut.register('Control+Alt+C', () => toggleVisible());
