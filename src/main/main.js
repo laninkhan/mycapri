@@ -14,6 +14,7 @@ const config = require('./config');
 const { TRAY, LANGS } = require('./labels');
 const { createBridge } = require('./bridge');
 const { startWindowWatch } = require('./windows');
+const { startNotificationWatch } = require('./notifications');
 const llm = require('./llm');
 const ollama = require('./ollama');
 const setup = require('./setup');
@@ -41,6 +42,7 @@ let tray = null;
 let trayMenu = null; // also what she opens when you right-click her
 let demoTimer = null;
 let windowWatch = null;
+let notificationWatch = null;
 // the watcher only speaks when something changes: the overlay asks for this when it (re)loads
 let lastWindows = null;
 let chatModels = null; // the provider's models, as last seen (null: not reached)
@@ -1041,6 +1043,9 @@ function main() {
         overlay?.webContents.send('windows:update', data);
       },
     });
+    notificationWatch = startNotificationWatch({
+      onNotification: (n) => sendCommand('notify', n),
+    });
     createBridge({
       port: PORT,
       // her own Claude Code chat's hooks would cover its answer with theirs
@@ -1069,6 +1074,7 @@ function main() {
   app.on('will-quit', () => {
     globalShortcut.unregisterAll();
     windowWatch?.stop();
+    notificationWatch?.stop();
   });
   app.on('window-all-closed', (e) => e.preventDefault());
 }

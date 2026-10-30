@@ -662,6 +662,14 @@ async function boot() {
       case 'screens': // a screen plugged in, unplugged or moved
         refreshScreens();
         break;
+      case 'notify': // a WhatsApp or Discord notification (main/notifications.js)
+        if (capri.stowed) break;
+        capri.wake();
+        capri.perform('hop');
+        panel.say({
+          kind: 'info', face: 'look', badge: cmd.app, line: cmd.title || cmd.app, quote: cmd.text, hold: 7000,
+        });
+        break;
       case 'remindIn': // --dev: a reminder `ms` from now
         reminders.add(Date.now() + (cmd.ms ?? 3000), cmd.text ?? '');
         break;
