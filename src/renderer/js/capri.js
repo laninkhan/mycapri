@@ -327,8 +327,10 @@ export class Capri {
         return { x: side + 30, y: this.floor };
       default: {
         const y = Math.random() < 0.65 ? this.floor : rand(SPRITE.height * s + 200, this.floor);
-        let x = rand(side, w - side);
-        if (Math.abs(x - this.pos.x) < w * 0.2) x = clamp(w - x, side, w - side);
+        // only along the left or right edge of the screen, never in the middle: the far one from where she is
+        const band = Math.max(side * 0.6, w * 0.06);
+        const left = this.pos.x > w / 2 ? Math.random() < 0.8 : Math.random() < 0.2;
+        const x = left ? rand(side, side + band) : rand(w - side - band, w - side);
         return { x, y };
       }
     }
