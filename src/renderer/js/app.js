@@ -504,6 +504,7 @@ async function boot() {
   window.dev = { capri, brain, panel, chat, guide, fx, voice, bond, jealousy, reminders, look, pc, setup, screens: () => screens };
 
   host.onClaudeEvent((evt) => brain.handle(evt));
+  host.onSystemNotification((n) => brain.onSystemNotification(n));
   host.onWindows((data) => {
     capri.setWindows(data);
     brain.onWindows(data);

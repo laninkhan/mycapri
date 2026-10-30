@@ -236,6 +236,15 @@ export class Brain {
     });
   }
 
+  // a macOS notification from any app: she shows who and what, never the body
+  onSystemNotification(n) {
+    if (!this.watching) return;
+    const app = n.app.split('.').pop();
+    this.capri.wake();
+    this.voice.play('tick');
+    this.say('info', n.title || app, null, { quote: '', tag: app, hold: 5000 });
+  }
+
   async onNotification(evt, s) {
     const type = evt.notification_type;
     if (type === 'permission_prompt' || type === 'elicitation_dialog' || type === 'agent_needs_input') {

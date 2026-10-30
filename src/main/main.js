@@ -19,6 +19,7 @@ const ollama = require('./ollama');
 const setup = require('./setup');
 const apps = require('./apps');
 const launch = require('./launch');
+const { startNotificationWatch } = require('./notifications');
 const files = require('./files');
 const { ASSISTANTS, assistant } = require('./assistants');
 const activeAssistant = () => assistant(config.load().assistant); // Claude Code or Codex
@@ -1046,6 +1047,10 @@ function main() {
       // her own Claude Code chat's hooks would cover its answer with theirs
       onEvent: (evt) => !llm.isChatSession(evt.session_id) && overlay?.webContents.send('claude:event', evt),
       onDebug: DEV ? debugHandler : null,
+    });
+    startNotificationWatch({
+      onNotification: (n) => overlay?.webContents.send('system:notification', n),
+      onState: (s) => console.log(`[capri] system notifications: ${s}`),
     });
     globalShortcut.register('Control+Alt+C', () => toggleVisible());
     llm.restoreClaude(readMemory().claude);

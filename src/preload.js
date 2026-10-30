@@ -10,6 +10,7 @@ const on = (channel) => (fn) => {
 
 contextBridge.exposeInMainWorld('host', {
   onClaudeEvent: on('claude:event'),
+  onSystemNotification: on('system:notification'),
   onCommand: on('capri:command'),
   onConfig: on('capri:config'),
   onResize: on('overlay:resize'),
